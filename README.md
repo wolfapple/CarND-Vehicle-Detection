@@ -15,6 +15,17 @@ The goals / steps of this project are the following:
 [image3]: ./output_images/bin_spatial.png
 [image4]: ./output_images/hog_features.png
 [image5]: ./output_images/extract_feature.png
+[image6]: ./output_images/window_search.png
+[image7]: ./output_images/multiscale.png
+[image8]: ./output_images/heatmap.png
+[image9]: ./output_images/thresholded_heatmap.png
+[image10]: ./output_images/final_box.png
+[image11]: ./output_images/pipeline0.png
+[image12]: ./output_images/pipeline1.png
+[image13]: ./output_images/pipeline2.png
+[image14]: ./output_images/pipeline3.png
+[image15]: ./output_images/pipeline4.png
+[image16]: ./output_images/pipeline5.png
 
 ## Data Exploration
 
@@ -61,11 +72,40 @@ The result of extracting the feature vector from the image and normalizing it is
 ![Extract Feature][image5]
 
 ## Train a classifier
+I tried training a classifier on my dataset. To do this, I defined a labels vector, shuffle and split the data into training and testing sets, and finally, define a classifier and train it. I used the functions defined in previous and `train_test_split()` function in `sklearn` package. In 'Tweak parameters' section of my notebook(p5.ipynb), you're given all the code to extract features and train a linear SVM.
+
+I tweaked many parameters and see how the results change. Repeated experiments have found a combination of parameters that yield the best results. After learning about the whole data using the parameters, I saved the parameters and classifier using pickle.
 
 ## Hog Sub-sampling Window Search
+Now it's time to search for cars and I have all the tools for it. I trained my classifier, then ran sliding window search, extracted features, and predicted whether each window contains a car or not.
+
+In my first implementation, I extracted HOG features from each individual window, but it was inefficient. To speed up, I modified the code by extracting HOG features just once for the entire region of interest and subsampling that array for each sliding window. In this way, I implemented `find_cars()`, an efficient function that extracts HOG features only once. In `find_cars()` function, each window is defined by scaling factor where a scale of 1 would result in a window that's 8x8 cells then the overlap of each window is in terms of the cell distance. I ran `find_cars()` function multiple times for different scale values to generate multiple-scaled search windows.
+
+The results are as follows:
+
+|Window Search|Multiple Scaled|
+|-------------|---------------|
+|![WS][image6]|![MS][image7]  |
 
 ## False Positive
+As you can see from the image above, there may be overlapping detection of the vehicle. It can also detect objects that are not vehicles. I build a heat-map from these detections in order to combine overlapping detections and remove false positives. The "hot part" of the heat map is the location of the car, and I removed false positives by applying a threshold. To do this, I wrote two functions, `get_heatmap ()` and `apply_threshold ()`.
+
+Finally, find final boxes from heatmap and put bounding boxes around the labeled regions. I used the `label()` function from `scikit-image` and wrote a `draw_labeled_bboxes()` function. The following images show this process.
+
+|Heatmap           |Thresholded Heatmap           |Final Box            |
+|------------------|------------------------------|---------------------|
+|![Heatmap][image8]|![Thresholded Heatmap][image9]|![Final Box][image10]|
 
 ## Pipeline
+I have built a `pipeline()` function that combines all the work so far. This function detects a car by inputting a single image and returns an image showing the position of the car as a box. I tested with images in the `test_images` directory.
+
+![pipeline test][image11]
+![pipeline test][image12]
+![pipeline test][image13]
+![pipeline test][image14]
+![pipeline test][image15]
+![pipeline test][image16]
+
+I confirmed that it works well and applied it to video. This completed video can be found [here](./project_video_output.mp4).
 
 ## Discussion
