@@ -39,7 +39,7 @@ The downloaded data consists of 8792 car images and 8968 non-car images. The sha
 ### Histograms of Color
 In image processing, a color histogram is a representation of the distribution of colors in an image. A histogram of an image is produced first by discretization of the colors in the image into a number of bins, and counting the number of image pixels in each bin.
 
-In the `color_hist()` function, I split the image into three channels, and then I got each histogram. `np.histogram()` returns a tuple of two arrays. `rhist[0]` contains the counts in each of the bins and `rhist [1]` contains the bin edges. I can compute the bin centers from the bin edges.
+In the `color_hist()` function, I split the image into three channels, and then I got each histogram. `np.histogram()` returns a tuple of two arrays. `channel1_hist[0]` contains the counts in each of the bins and `channel1_hist[1]` contains the bin edges. I can compute the bin centers from the bin edges.
 
 Which gives us this result:
 
@@ -109,3 +109,10 @@ I have built a `pipeline()` function that combines all the work so far. This fun
 I confirmed that it works well and applied it to video. This completed video can be found [here](./project_video_output.mp4).
 
 ## Discussion
+The most important thing in this project was the parameter tuning. At first I focused on getting the SVM classifier to produce the best results. However, even though the classifier reported good results, it does not necessarily mean good results in vehicle detection. So after that I tried to reduce the number of false positives in the video.
+
+Currently, I am removing the false positives by applying a threshold to the heat map, which is not perfect. I think I can improve by parameter tuning and learning more data.
+
+Another area I would like to improve is to mark the boundaries of the detected vehicle more closely to the vehicle. At present, the bounding box is a little unstable and is not always the perfect fit for the entire vehicle.
+
+The last thing we want to improve is the detection speed. It has already been speeded up by modifying the HOG feature to only calculate once for the whole area of interest, but it is still slow. It takes a long time to train, but it takes a long time to generate the resulting video as it takes a long time to evaluate.
